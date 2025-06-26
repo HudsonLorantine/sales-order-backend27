@@ -1,0 +1,6 @@
+# Copied from project root
+# Add your backend dependencies here
+
+fastapi
+uvicorn
+# ...other dependencies from your original requirements.txt
