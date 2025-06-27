@@ -11,7 +11,10 @@ print(f"Python version: {sys.version}")
 print(f"Environment variables: {os.environ}")
 
 # Import enhanced sample data
-from sample_data import customers, products, orders
+import sample_data
+customers = sample_data.customers
+products = sample_data.products
+orders = sample_data.orders
 
 @app.route('/')
 def index():
