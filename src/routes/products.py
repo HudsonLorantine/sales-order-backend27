@@ -17,14 +17,14 @@ def get_products():
         )
     
     products = query.all()
-    return jsonify([product.to_dict() for product in products])
+    return jsonify({'products': [product.to_dict() for product in products]})
 
 @products_bp.route('/products', methods=['POST'])
 def create_product():
     """Create a new product"""
     data = request.get_json()
     
-    if not data or not data.get('sku') or not data.get('product_name') or not data.get('unit_price'):
+    if not data or not data.get('sku') or not data.get('name') or not data.get('price'):
         return jsonify({'error': 'SKU, product name, and unit price are required'}), 400
     
     # Check if SKU already exists
@@ -34,10 +34,10 @@ def create_product():
     
     product = Product(
         sku=data['sku'],
-        product_name=data['product_name'],
+        product_name=data['name'],
         description=data.get('description'),
-        unit_price=data['unit_price'],
-        inventory_quantity=data.get('inventory_quantity', 0)
+        unit_price=data['price'],
+        inventory_quantity=data.get('stock_quantity', 0)
     )
     
     try:
