@@ -4,11 +4,13 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=['*'])  # Allow all origins for testing
+CORS(app, origins=['https://brave-coast-082fed100.2.azurestaticapps.net', 'http://localhost:5173'])
 
 # Debug information
 print(f"Python version: {sys.version}")
 print(f"Environment variables: {os.environ}")
+print(f"Current directory: {os.getcwd()}")
+print(f"Directory contents: {os.listdir('.')}")
 
 # Sample data for quick testing
 customers = [
@@ -74,7 +76,7 @@ orders = [
 
 @app.route('/')
 def index():
-    return jsonify({"message": "Sales Order API is running"})
+    return jsonify({"message": "Sales Order API is running on Azure"})
 
 @app.route('/api/health')
 def health_check():
@@ -99,5 +101,7 @@ def get_orders():
     return jsonify(orders)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
+    # Get port from environment variable with fallback
+    port = int(os.environ.get('PORT', os.environ.get('WEBSITES_PORT', 8000)))
+    print(f"Starting app on port: {port}")
     app.run(host='0.0.0.0', port=port, debug=True)

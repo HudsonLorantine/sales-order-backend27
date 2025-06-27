@@ -1,14 +1,8 @@
-import os
-import sys
+import logging
+import azure.functions as func
 from flask import Flask, jsonify, request
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=['*'])  # Allow all origins for testing
-
-# Debug information
-print(f"Python version: {sys.version}")
-print(f"Environment variables: {os.environ}")
 
 # Sample data for quick testing
 customers = [
@@ -72,32 +66,40 @@ orders = [
     }
 ]
 
-@app.route('/')
-def index():
-    return jsonify({"message": "Sales Order API is running"})
-
-@app.route('/api/health')
-def health_check():
-    # Return details about the environment for debugging
-    return jsonify({
-        "status": "healthy",
-        "python_version": sys.version,
-        "environment": str(dict(os.environ)),
-        "message": "Health check endpoint is working"
-    })
-
-@app.route('/api/customers')
-def get_customers():
-    return jsonify(customers)
-
-@app.route('/api/products')
-def get_products():
-    return jsonify(products)
-
-@app.route('/api/orders')
-def get_orders():
-    return jsonify(orders)
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port, debug=True)
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    route = req.route_params.get('route', '')
+    
+    if route == '' or route == 'index':
+        return func.HttpResponse(
+            jsonify({"message": "Sales Order API is running"}).data,
+            mimetype="application/json"
+        )
+    elif route == 'health':
+        return func.HttpResponse(
+            jsonify({
+                "status": "healthy",
+                "message": "Health check endpoint is working"
+            }).data,
+            mimetype="application/json"
+        )
+    elif route == 'customers':
+        return func.HttpResponse(
+            jsonify(customers).data,
+            mimetype="application/json"
+        )
+    elif route == 'products':
+        return func.HttpResponse(
+            jsonify(products).data,
+            mimetype="application/json"
+        )
+    elif route == 'orders':
+        return func.HttpResponse(
+            jsonify(orders).data,
+            mimetype="application/json"
+        )
+    else:
+        return func.HttpResponse(
+            jsonify({"error": "Route not found"}).data,
+            mimetype="application/json",
+            status_code=404
+        )
