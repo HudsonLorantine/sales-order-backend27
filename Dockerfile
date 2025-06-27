@@ -1,20 +1,24 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements-min.txt requirements.txt
+# Copy requirements first for better layer caching
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY minimal_app.py app.py
+COPY . .
+
+# Create database directory
+RUN mkdir -p src/database
 
 # Port is configurable via environment variable
 ENV PORT=8000
+ENV PYTHONPATH=/app
 
 # Configure for Azure App Service
 ENV WEBSITE_HOSTNAME=0.0.0.0
 EXPOSE $PORT
 
-# Start with increased timeout for Azure cold starts
-CMD gunicorn --bind 0.0.0.0:$PORT --timeout 120 --access-logfile - --error-logfile - app:app
+# Start with gunicorn
+CMD gunicorn --bind 0.0.0.0:$PORT --timeout 120 --access-logfile - --error-logfile - src.main:app
