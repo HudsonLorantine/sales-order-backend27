@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Build And Deploy
@@ -29,6 +29,7 @@ jobs:
           api_location: "api"
           output_location: ""
           skip_deploy_on_missing_secrets: true
+          skip_api_build: false
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

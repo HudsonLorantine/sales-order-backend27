@@ -1,8 +1,6 @@
 import logging
+import json
 import azure.functions as func
-from flask import Flask, jsonify, request
-
-app = Flask(__name__)
 
 # Sample data for quick testing
 customers = [
@@ -67,39 +65,44 @@ orders = [
 ]
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    
     route = req.route_params.get('route', '')
     
     if route == '' or route == 'index':
+        response_data = {"message": "Sales Order API is running"}
         return func.HttpResponse(
-            jsonify({"message": "Sales Order API is running"}).data,
+            json.dumps(response_data),
             mimetype="application/json"
         )
     elif route == 'health':
+        response_data = {
+            "status": "healthy",
+            "message": "Health check endpoint is working"
+        }
         return func.HttpResponse(
-            jsonify({
-                "status": "healthy",
-                "message": "Health check endpoint is working"
-            }).data,
+            json.dumps(response_data),
             mimetype="application/json"
         )
     elif route == 'customers':
         return func.HttpResponse(
-            jsonify(customers).data,
+            json.dumps(customers),
             mimetype="application/json"
         )
     elif route == 'products':
         return func.HttpResponse(
-            jsonify(products).data,
+            json.dumps(products),
             mimetype="application/json"
         )
     elif route == 'orders':
         return func.HttpResponse(
-            jsonify(orders).data,
+            json.dumps(orders),
             mimetype="application/json"
         )
     else:
+        response_data = {"error": "Route not found"}
         return func.HttpResponse(
-            jsonify({"error": "Route not found"}).data,
+            json.dumps(response_data),
             mimetype="application/json",
             status_code=404
         )
