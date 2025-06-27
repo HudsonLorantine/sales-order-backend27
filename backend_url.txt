@@ -1,1 +1,1 @@
-https://
+https://sales-order-backend.blueocean-64f72639.eastus.azurecontainerapps.io
